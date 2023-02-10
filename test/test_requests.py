@@ -1,4 +1,5 @@
 from neispy.sync import SyncNeispy
+from datetime import datetime
 
 
 def test_all(client: SyncNeispy):
@@ -7,7 +8,7 @@ def test_all(client: SyncNeispy):
     SE = scinfo[0].SD_SCHUL_CODE  # 학교코드
 
     # 학교코드와 교육청 코드로 2022년 5월 23일의 급식 정보 요청
-    scmeal = client.mealServiceDietInfo(AE, SE, MLSV_YMD="20220523")
+    scmeal = client.mealServiceDietInfo(MLSV_YMD=datetime.strptime("20220523", "%Y%m%d"), school=scinfo[0])
     meal = scmeal[0].DDISH_NM.replace("<br/>", "\n")  # 줄바꿈으로 만든뒤 출력
 
     # 학교코드와 교육청 코드로 2022년 6월 1일날 학사일정 요청

@@ -6,6 +6,7 @@ except ImportError:
 from functools import wraps
 from json import dumps, loads
 from types import SimpleNamespace
+from datetime import datetime
 from typing import Any, Callable, Coroutine, Dict, Optional, TypeVar, cast
 
 from aiohttp.client import ClientSession
@@ -48,7 +49,18 @@ class Neispy(NeispyRequest):
 
     def __get_params(self, locals: Dict[str, Any]) -> Any:
         locals.pop("self")
-        return {k: v for k, v in locals.items() if v is not None}
+        params = {}
+        for name, value in locals.items():
+            if value is None:
+                continue
+            if isinstance(value, School):
+                params["ATPT_OFCDC_SC_CODE"] = value.ATPT_OFCDC_SC_CODE
+                params["SD_SCHUL_CODE"] = value.SD_SCHUL_CODE
+                continue
+            elif isinstance(value, datetime):
+                value = value.strftime("%Y%m%d")
+            params[name] = value
+        return params
 
     @classmethod
     def sync(
@@ -66,7 +78,7 @@ class Neispy(NeispyRequest):
     async def schoolInfo(
         self,
         ATPT_OFCDC_SC_CODE: Optional[str] = None,
-        SD_SCHUL_CODE: Optional[str] = None,
+        SD_SCHUL_CODE: Optional[int] = None,
         SCHUL_NM: Optional[str] = None,
         SCHUL_KND_SC_NM: Optional[str] = None,
         LCTN_SC_NM: Optional[str] = None,
@@ -83,11 +95,12 @@ class Neispy(NeispyRequest):
     async def mealServiceDietInfo(
         self,
         ATPT_OFCDC_SC_CODE: Optional[str] = None,
-        SD_SCHUL_CODE: Optional[str] = None,
-        MMEAL_SC_CODE: Optional[str] = None,
-        MLSV_YMD: Optional[str] = None,
-        MLSV_FROM_YMD: Optional[str] = None,
-        MLSV_TO_YMD: Optional[str] = None,
+        SD_SCHUL_CODE: Optional[int] = None,
+        MMEAL_SC_CODE: Optional[int] = None,
+        MLSV_YMD: Optional[datetime] = None,
+        MLSV_FROM_YMD: Optional[datetime] = None,
+        MLSV_TO_YMD: Optional[datetime] = None,
+        school: Optional[School] = None,
     ) -> Any:
         params = self.__get_params(locals())
         return await self.get_mealServiceDietInfo(params)
