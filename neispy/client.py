@@ -13,7 +13,7 @@ from aiohttp.client import ClientSession
 
 from neispy.http import NeispyRequest
 from neispy.sync import SyncNeispy
-from neispy.models import School
+from neispy.models import School, Meal
 
 
 CORO = TypeVar("CORO", bound=Callable[..., Coroutine[Any, Any, Any]])
@@ -91,7 +91,6 @@ class Neispy(NeispyRequest):
             result.append(School(school))
         return result
 
-    @to_obj
     async def mealServiceDietInfo(
         self,
         ATPT_OFCDC_SC_CODE: Optional[str] = None,
@@ -101,9 +100,14 @@ class Neispy(NeispyRequest):
         MLSV_FROM_YMD: Optional[datetime] = None,
         MLSV_TO_YMD: Optional[datetime] = None,
         school: Optional[School] = None,
-    ) -> Any:
+    ) -> list[Meal]:
         params = self.__get_params(locals())
-        return await self.get_mealServiceDietInfo(params)
+        data = await self.get_mealServiceDietInfo(params)
+        result = []
+        for meal in data:
+            meal["school"] = school
+            result.append(Meal(meal))
+        return result
 
     @to_obj
     async def SchoolSchedule(

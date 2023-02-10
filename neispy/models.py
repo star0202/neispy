@@ -39,3 +39,20 @@ class School:
 
     def __str__(self):
         return f"{self.ATPT_OFCDC_SC_CODE} {self.SD_SCHUL_CODE} {self.SCHUL_NM}"
+
+
+class Meal:
+    def __init__(self, data: dict):
+        self.school: School = data["school"]  # 학교
+        self.MMEAL_SC_CODE: int = int(data["MMEAL_SC_CODE"])  # 식사코드
+        self.MMEAL_SC_NM: str = data["MMEAL_SC_NM"]  # 식사명
+        self.MLSV_YMD: datetime = datetime.strptime(data["MLSV_YMD"], "%Y%m%d")  # 급식일자
+        self.MLSV_FGR: int = int(data["MLSV_FGR"])  # 급식인원수
+        self.DDISH_NM: list[str] = data["DDISH_NM"].split("<br/>")  # 요리명
+        self.CAL_INFO: float = float(data["CAL_INFO"][:-5])  # 칼로리정보
+        self.NTR_INFO: list[str] = data["NTR_INFO"].split("<br/>")  # 영양정보
+        self.MLSV_FROM_YMD: datetime = datetime.strptime(data["MLSV_FROM_YMD"], "%Y%m%d")  # 급식시작일자
+        self.MLSV_TO_YMD: datetime = datetime.strptime(data["MLSV_TO_YMD"], "%Y%m%d")  # 급식종료일자
+
+    def __str__(self):
+        return f"{self.school} {self.MLSV_YMD.strftime('%Y%d%m')} {self.DDISH_NM}"

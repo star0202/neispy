@@ -7,7 +7,7 @@ except ImportError:
     from typing_extensions import Literal
 
 from aiohttp.client import ClientSession
-from neispy.models import School
+from neispy.models import School, Meal
 
 
 class SyncNeispyRequest:
@@ -122,7 +122,7 @@ class SyncNeispy(SyncNeispyRequest):
         MLSV_FROM_YMD: Optional[datetime] = None,
         MLSV_TO_YMD: Optional[datetime] = None,
         school: Optional[School] = None,
-    ) -> Any:
+    ) -> list[Meal]:
         ...
 
     def SchoolSchedule(
